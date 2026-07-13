@@ -74,3 +74,111 @@ Für die KI-basierte Erstellung des Quizzes wird ein Gemini API-Key benötigt.
 - [ ] Gemini API-Key als Environment Variable definieren
 - [ ] Gemini-Client erst ergänzen, wenn der Quiz-Generierungsservice umgesetzt wird
 - [ ] Tests für Video-URL-Verarbeitung, Audio-Extraktion und Quiz-Generierung planen
+
+## Frontend Repository
+
+Das gestellte Frontend liegt hier:
+
+```text
+git@github.com:Developer-Akademie-Backendkurs/project.Quizly.git
+```
+
+Das Backend muss die dokumentierten API-Endpunkte und Response-Formate passend zu diesem Frontend bereitstellen.
+
+## Wichtige Implementierungsdetails
+
+### yt-dlp Optionen
+
+Für den YouTube-Audio-Download sollen diese Optionen verwendet werden:
+
+```python
+ydl_opts = {
+    "format": "bestaudio/best",
+    "outtmpl": tmp_filename,
+    "quiet": True,
+    "noplaylist": True,
+}
+```
+
+Wichtig:
+
+- Nur YouTube-Videos verarbeiten.
+- Keine Playlists verarbeiten (`noplaylist=True`).
+- Temporäre Dateinamen kontrolliert erzeugen und nach Verarbeitung aufräumen.
+
+### Kanonische YouTube-URL speichern
+
+Die gespeicherte Video-URL muss exakt in dieser Form aufgebaut werden:
+
+```text
+https://www.youtube.com/watch?v=ID-DES-VIDEOS
+```
+
+Dafür muss aus jeder akzeptierten YouTube-URL zuerst die Video-ID extrahiert werden. Danach wird die URL aus dieser ID neu zusammengesetzt. Nicht blind die eingereichte URL speichern, weil das Frontend eine einheitliche URL-Struktur erwartet.
+
+### Gemini-Ausgabe bereinigen
+
+Gemini kann die JSON-Antwort in Markdown-Codeblöcke einpacken, zum Beispiel:
+
+````text
+```json
+{ ... }
+```
+````
+
+oder:
+
+````text
+```
+{ ... }
+```
+````
+
+Vor dem Speichern und vor `json.loads` müssen solche Markdown-Fences entfernt werden. Die gespeicherten Quizdaten sollen aus validem JSON stammen, nicht aus rohem Markdown-Text.
+
+### Gemini Prompt-Vorlage
+
+Das Transkript muss am Ende des Prompts angefügt werden.
+
+```text
+Based on the following transcript, generate a quiz in valid JSON format.
+
+The quiz must follow this exact structure:
+
+{
+  "title": "Create a concise quiz title based on the topic of the transcript.",
+  "description": "Summarize the transcript in no more than 150 characters. Do not include any quiz questions or answers.",
+  "questions": [
+    {
+      "question_title": "The question goes here.",
+      "question_options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": "The correct answer from the above options"
+    },
+    ...
+    (exactly 10 questions)
+  ]
+}
+
+Requirements:
+
+- Each question must have exactly 4 distinct answer options.
+- Only one correct answer is allowed per question, and it must be present in 'question_options'.
+- The output must be valid JSON and parsable as-is (e.g., using Python's json.loads).
+- Do not include explanations, comments, or any text outside the JSON.
+
+Transcript:
+{transcript}
+```
+
+## Ergänzte Umsetzungsliste
+
+- [ ] Frontend-Repository lokal referenzieren und API-Kompatibilität prüfen
+- [ ] YouTube-Video-ID robust aus verschiedenen URL-Formaten extrahieren
+- [ ] Video-URL kanonisch als `https://www.youtube.com/watch?v=<video_id>` speichern
+- [ ] yt-dlp mit den vorgegebenen Optionen kapseln
+- [ ] Gemini-Prompt als zentrale Vorlage ablegen
+- [ ] Markdown-Fences aus Gemini-Antworten entfernen
+- [ ] Gemini-Antwort per `json.loads` validieren
+- [ ] Prüfen, dass genau 10 Fragen entstehen
+- [ ] Prüfen, dass jede Frage genau 4 unterschiedliche Optionen enthält
+- [ ] Prüfen, dass `answer` in `question_options` enthalten ist

@@ -29,3 +29,7 @@ GitHub Actions runs the same checks on pushes and pull requests to `main`.
 The project uses Django 5.2 with the settings module `config.settings`.
 Local SQLite data is stored in `db.sqlite3` and ignored by Git.
 
+## External Requirements
+
+FFmpeg must be installed globally for the future Whisper audio transcription workflow.
+
