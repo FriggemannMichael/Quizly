@@ -1,2 +1,8 @@
-# Add project dependencies here, one per line.
-
+Django==5.2.16
+djangorestframework==3.17.1
+djangorestframework_simplejwt==5.5.1
+django-filter==26.1
+PyJWT==2.13.0
+asgiref==3.11.1
+sqlparse==0.5.5
+tzdata==2026.3

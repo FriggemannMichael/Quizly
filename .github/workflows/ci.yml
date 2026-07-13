@@ -33,5 +33,11 @@ jobs:
       - name: Ruff format check
         run: ruff format --check .
 
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Run tests
+        run: pytest
+
       - name: Check size limits
         run: python scripts/check_size_limits.py
