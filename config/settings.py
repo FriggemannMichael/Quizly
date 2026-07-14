@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'core',
     'accounts',
-    'quizzes',
+    'quizzes_app.apps.QuizzesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

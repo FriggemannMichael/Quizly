@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from quizzes.models import Question, Quiz
+from quizzes_app.models import Question, Quiz
 
 pytestmark = pytest.mark.django_db
 
