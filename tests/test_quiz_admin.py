@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from quizzes.admin import QuestionAdmin, QuizAdmin
-from quizzes.models import Question, Quiz
+from quizzes_app.admin import QuestionAdmin, QuizAdmin
+from quizzes_app.models import Question, Quiz
 
 
 def test_quiz_and_question_models_are_registered_in_admin():

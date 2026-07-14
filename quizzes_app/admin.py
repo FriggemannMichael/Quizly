@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from quizzes.models import Question, Quiz
+from quizzes_app.models import Question, Quiz
 
 
 @admin.register(Quiz)
