@@ -15,7 +15,7 @@ python manage.py runserver
 ```powershell
 ruff check .
 ruff format .
-python scripts/check_size_limits.py
+python tests/scripts/check_size_limits.py
 pytest
 ```
 
@@ -25,7 +25,7 @@ CI runs the Postman auth smoke collection with Newman against a local Django ser
 To run it locally after starting `python manage.py runserver`:
 
 ```powershell
-npx --yes newman@6.2.1 run postman/quizly-auth.postman_collection.json --env-var baseUrl=http://127.0.0.1:8000
+npx --yes newman@6.2.1 run tests/postman/quizly-auth.postman_collection.json --env-var baseUrl=http://127.0.0.1:8000
 ```
 
 ## CI
