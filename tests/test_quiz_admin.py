@@ -23,6 +23,15 @@ def test_quiz_admin_exposes_useful_review_fields():
     assert model_admin.list_filter == ('created_at', 'updated_at')
 
 
+def test_quiz_and_question_admin_are_read_only():
+    for model in (Quiz, Question):
+        model_admin = admin.site._registry[model]
+
+        assert model_admin.has_add_permission(None) is False
+        assert model_admin.has_change_permission(None) is False
+        assert model_admin.has_delete_permission(None) is False
+
+
 def test_question_admin_exposes_useful_review_fields():
     model_admin = admin.site._registry[Question]
 

@@ -4,6 +4,7 @@ from django.db import models
 
 
 def validate_question_options(options: object) -> None:
+    """Ensure question options are a list of exactly four non-empty strings."""
     if not isinstance(options, list):
         raise ValidationError('Question options must be a list.')
     if len(options) != 4:
@@ -44,6 +45,7 @@ class Question(models.Model):
         return self.question_title
 
     def clean(self) -> None:
+        """Validate that the stored answer matches one of the options."""
         super().clean()
         if self.answer not in self.question_options:
             raise ValidationError({'answer': 'Answer must be one of the options.'})

@@ -10,24 +10,29 @@ AUTH_COOKIE_SECURE = False
 def set_auth_cookies(
     response: HttpResponse, access_token: str, refresh_token: str
 ) -> None:
+    """Attach both the access and refresh token cookies to the response."""
     set_access_token_cookie(response, access_token)
     set_refresh_token_cookie(response, refresh_token)
 
 
 def set_access_token_cookie(response: HttpResponse, token: str) -> None:
+    """Store the access token as an HTTP-only cookie on the response."""
     _set_cookie(response, ACCESS_TOKEN_COOKIE_NAME, token)
 
 
 def set_refresh_token_cookie(response: HttpResponse, token: str) -> None:
+    """Store the refresh token as an HTTP-only cookie on the response."""
     _set_cookie(response, REFRESH_TOKEN_COOKIE_NAME, token)
 
 
 def delete_auth_cookies(response: HttpResponse) -> None:
+    """Remove the access and refresh token cookies from the response."""
     response.delete_cookie(ACCESS_TOKEN_COOKIE_NAME, samesite=AUTH_COOKIE_SAMESITE)
     response.delete_cookie(REFRESH_TOKEN_COOKIE_NAME, samesite=AUTH_COOKIE_SAMESITE)
 
 
 def _set_cookie(response: HttpResponse, name: str, value: str) -> None:
+    """Write a single HTTP-only auth cookie with the shared security flags."""
     response.set_cookie(
         name,
         value,

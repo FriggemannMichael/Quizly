@@ -1,17 +1,16 @@
 from rest_framework import status
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.serializers import LoginSerializer, RegisterSerializer
-from core.cookies import (
-    REFRESH_TOKEN_COOKIE_NAME,
-    set_access_token_cookie,
-    set_auth_cookies,
+from accounts.serializers import RegisterSerializer
+from accounts.utils import (
+    login_response_payload,
+    validated_login_serializer,
+    validated_refresh_token,
 )
+from core.cookies import set_access_token_cookie, set_auth_cookies
 
 
 class RegisterView(APIView):
@@ -35,10 +34,10 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = _validated_login_serializer(request)
+        serializer = validated_login_serializer(request)
         user = serializer.validated_data['user']
         refresh_token = RefreshToken.for_user(user)
-        response = Response(_login_response_payload(user))
+        response = Response(login_response_payload(user))
         set_auth_cookies(response, str(refresh_token.access_token), str(refresh_token))
         return response
 
@@ -49,35 +48,7 @@ class CookieTokenRefreshView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        refresh_token = _validated_refresh_token(request)
+        refresh_token = validated_refresh_token(request)
         response = Response({'detail': 'Token refreshed'})
         set_access_token_cookie(response, str(refresh_token.access_token))
         return response
-
-
-def _validated_login_serializer(request):
-    serializer = LoginSerializer(data=request.data, context={'request': request})
-    if not serializer.is_valid():
-        raise AuthenticationFailed('Invalid credentials.')
-    return serializer
-
-
-def _validated_refresh_token(request):
-    token = request.COOKIES.get(REFRESH_TOKEN_COOKIE_NAME)
-    if token is None:
-        raise AuthenticationFailed('Invalid refresh token.')
-    try:
-        return RefreshToken(token)
-    except TokenError as error:
-        raise AuthenticationFailed('Invalid refresh token.') from error
-
-
-def _login_response_payload(user):
-    return {
-        'detail': 'Login successfully!',
-        'user': {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-        },
-    }
