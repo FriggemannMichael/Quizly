@@ -59,8 +59,8 @@ jobs:
 
       - name: Run Postman smoke tests
         run: |
-          npx --yes newman@6.2.1 run postman/quizly-auth.postman_collection.json \
+          npx --yes newman@6.2.1 run tests/postman/quizly-auth.postman_collection.json \
             --env-var baseUrl=http://127.0.0.1:8000
 
       - name: Check size limits
-        run: python scripts/check_size_limits.py
+        run: python tests/scripts/check_size_limits.py
