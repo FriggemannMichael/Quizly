@@ -6,7 +6,6 @@
 py -3.13 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
 python manage.py migrate
 python manage.py runserver
 ```
@@ -18,6 +17,15 @@ ruff check .
 ruff format .
 python scripts/check_size_limits.py
 pytest
+```
+
+## Postman smoke tests
+
+CI runs the Postman auth smoke collection with Newman against a local Django server.
+To run it locally after starting `python manage.py runserver`:
+
+```powershell
+npx --yes newman@6.2.1 run postman/quizly-auth.postman_collection.json --env-var baseUrl=http://127.0.0.1:8000
 ```
 
 ## CI
@@ -32,4 +40,3 @@ Local SQLite data is stored in `db.sqlite3` and ignored by Git.
 ## External Requirements
 
 FFmpeg must be installed globally for the future Whisper audio transcription workflow.
-

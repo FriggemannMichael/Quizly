@@ -1,4 +1,4 @@
-﻿# Quizly Documentation
+# Quizly Documentation
 
 This folder contains the project references used for implementation and acceptance.
 

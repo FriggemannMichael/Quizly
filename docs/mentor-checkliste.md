@@ -1,4 +1,4 @@
-﻿# Checkliste Quizly
+# Checkliste Quizly
 
 Bitte erfülle alle Punkte auf dieser Liste, bevor du das Projekt einreichst. **(Definition of Done \- DoD)**
 
