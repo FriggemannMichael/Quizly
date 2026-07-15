@@ -1,4 +1,4 @@
-﻿# Quizly API Endpoint Implementation Checklist
+# Quizly API Endpoint Implementation Checklist
 
 Source: https://cdn.developerakademie.com/courses/Backend/EndpointDoku/index.html?name=quizly
 

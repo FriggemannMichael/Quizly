@@ -1,4 +1,4 @@
-﻿# Frontend Integration Notes
+# Frontend Integration Notes
 
 Source repository inspected temporarily at `C:\tmp\quizly-frontend`.
 

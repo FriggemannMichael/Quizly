@@ -13,6 +13,7 @@ SKIP_DIRS = {
     '.ruff_cache',
     '.venv',
     '__pycache__',
+    'tests',
 }
 
 

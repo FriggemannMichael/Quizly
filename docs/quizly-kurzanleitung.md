@@ -1,4 +1,4 @@
-﻿# Quizly Kurzanleitung
+# Quizly Kurzanleitung
 
 Quelle: `C:\Users\Anwender\Desktop\Kurzanleitung Quizly.pdf`
 

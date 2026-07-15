@@ -1,4 +1,4 @@
-﻿# Dependency Decisions
+# Dependency Decisions
 
 This document tracks dependency decisions derived from the project docs and frontend analysis.
 
