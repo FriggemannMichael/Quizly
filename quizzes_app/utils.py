@@ -37,7 +37,7 @@ def _raw_video_id(parsed) -> str:
         return parsed.path.lstrip('/')
     for prefix in PATH_ID_PREFIXES:
         if parsed.path.startswith(prefix):
-            return parsed.path[len(prefix):].split('/')[0]
+            return parsed.path[len(prefix) :].split('/')[0]
     return parse_qs(parsed.query).get('v', [''])[0]
 
 
