@@ -7,10 +7,15 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.serializers import RegisterSerializer
 from accounts.utils import (
     login_response_payload,
+    logout_response_payload,
     validated_login_serializer,
     validated_refresh_token,
 )
-from core.cookies import set_access_token_cookie, set_auth_cookies
+from core.cookies import (
+    delete_auth_cookies,
+    set_access_token_cookie,
+    set_auth_cookies,
+)
 
 
 class RegisterView(APIView):
@@ -39,6 +44,19 @@ class LoginView(APIView):
         refresh_token = RefreshToken.for_user(user)
         response = Response(login_response_payload(user))
         set_auth_cookies(response, str(refresh_token.access_token), str(refresh_token))
+        return response
+
+
+class LogoutView(APIView):
+    """Blacklist the refresh token and clear the auth cookies."""
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = validated_refresh_token(request)
+        refresh_token.blacklist()
+        response = Response(logout_response_payload())
+        delete_auth_cookies(response)
         return response
 
 
