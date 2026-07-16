@@ -25,6 +25,16 @@ def validated_refresh_token(request):
         raise AuthenticationFailed('Invalid refresh token.') from error
 
 
+def logout_response_payload():
+    """Build the JSON payload returned after a successful logout."""
+    return {
+        'detail': (
+            'Log-Out successfully! All Tokens will be deleted. '
+            'Refresh token is now invalid.'
+        ),
+    }
+
+
 def login_response_payload(user):
     """Build the JSON payload returned after a successful login."""
     return {

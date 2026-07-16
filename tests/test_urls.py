@@ -12,3 +12,7 @@ def test_register_url_is_registered():
 
 def test_login_url_is_registered():
     assert reverse('login') == '/api/login/'
+
+
+def test_logout_url_is_registered():
+    assert reverse('logout') == '/api/logout/'
