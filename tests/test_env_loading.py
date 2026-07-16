@@ -4,11 +4,21 @@ import pytest
 
 from config.env import load_env_file
 
+MANAGED_VARS = ('GEMINI_API_KEY', 'DJANGO_DEBUG', 'DJANGO_SECRET_KEY')
+
 
 @pytest.fixture(autouse=True)
-def restore_environ():
-    """Undo environment changes that loading a .env file causes."""
+def clean_environ():
+    """Isolate the variables under test from the developer's own `.env`.
+
+    Importing Django settings runs `load_env_file`, so a real `.env` is
+    already in `os.environ` before any test starts. Since `load_env_file`
+    deliberately does not override, those values would otherwise beat the
+    fixture files these tests write.
+    """
     snapshot = os.environ.copy()
+    for name in MANAGED_VARS:
+        os.environ.pop(name, None)
     yield
     os.environ.clear()
     os.environ.update(snapshot)
@@ -37,8 +47,6 @@ def test_real_environment_wins_over_env_file(tmp_path):
 
 
 def test_missing_env_file_is_not_an_error(tmp_path):
-    os.environ.pop('GEMINI_API_KEY', None)
-
     load_env_file(tmp_path)
 
     assert 'GEMINI_API_KEY' not in os.environ
