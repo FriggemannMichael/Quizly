@@ -8,8 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from core import cookies
 
 LOGOUT_DETAIL = (
-    'Log-Out successfully! All Tokens will be deleted. '
-    'Refresh token is now invalid.'
+    'Log-Out successfully! All Tokens will be deleted. Refresh token is now invalid.'
 )
 
 
