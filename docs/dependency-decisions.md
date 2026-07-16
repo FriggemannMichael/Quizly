@@ -41,6 +41,14 @@ Runtime configuration needed later:
 GEMINI_API_KEY=<key>
 ```
 
+### `python-dotenv==1.2.2`
+
+Reason: `.env.example` documents a `.env` workflow, but nothing read the file, so every setting silently fell back to its default unless the variable was exported by hand or by an IDE run configuration.
+
+`config/env.py::load_env_file` is called from `config/settings.py` before the first `os.environ.get`. It uses `override=False`, so a real environment variable always wins over `.env` and CI and production stay authoritative. A missing `.env` is ignored.
+
+Chosen over `django-environ` because the project already reads plain `os.environ` values and only needs the file loaded, not a second settings-parsing API.
+
 ### Simple JWT blacklist app
 
 Reason: Logout must invalidate refresh tokens.

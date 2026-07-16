@@ -6,6 +6,7 @@ django-filter==26.1
 google-genai==2.11.0
 yt-dlp==2026.6.9
 openai-whisper==20250625
+python-dotenv==1.2.2
 PyJWT==2.13.0
 annotated-types==0.7.0
 anyio==4.14.2
