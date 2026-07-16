@@ -6,7 +6,7 @@ from google.genai import errors
 
 from quizzes_app.prompts import QUIZ_PROMPT_TEMPLATE
 
-DEFAULT_MODEL_NAME = 'gemini-2.0-flash'
+DEFAULT_MODEL_NAME = 'gemini-3.5-flash'
 
 
 class QuizGenerationError(Exception):
