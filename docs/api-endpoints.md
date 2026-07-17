@@ -235,36 +235,38 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 - [x] Add permissions/auth handling
 - [x] Add tests for success and error cases
 
-### [ ] GET /api/quizzes/
+### [x] GET /api/quizzes/
 
-**Description:** Ruft alle Quizzes des authentifizierten Benutzers ab.
+**Description:** Ruft alle Quizzes des authentifizierten Benutzers ab, neueste zuerst.
 
 **Permissions:** Authentifizierung erforderlich.
 
 **Success Response:** Liste aller Quizzes des Benutzers mit Fragen.
 
 ```json
-{
-    "id":  1,
-    "title":  "Quiz Title",
-    "description":  "Quiz Description",
-    "created_at":  "2023-07-29T12:34:56.789Z",
-    "updated_at":  "2023-07-29T12:34:56.789Z",
-    "video_url":  "https://www.youtube.com/watch?v=example",
-    "questions":  [
-                      {
-                          "id":  1,
-                          "question_title":  "Question 1",
-                          "question_options":  [
-                                                   "Option A",
-                                                   "Option B",
-                                                   "Option C",
-                                                   "Option D"
-                                               ],
-                          "answer":  "Option A"
-                      }
-                  ]
-}
+[
+    {
+        "id":  1,
+        "title":  "Quiz Title",
+        "description":  "Quiz Description",
+        "created_at":  "2023-07-29T12:34:56.789Z",
+        "updated_at":  "2023-07-29T12:34:56.789Z",
+        "video_url":  "https://www.youtube.com/watch?v=example",
+        "questions":  [
+                          {
+                              "id":  1,
+                              "question_title":  "Question 1",
+                              "question_options":  [
+                                                       "Option A",
+                                                       "Option B",
+                                                       "Option C",
+                                                       "Option D"
+                                                   ],
+                              "answer":  "Option A"
+                          }
+                      ]
+    }
+]
 ```
 
 **Status Codes**
@@ -277,11 +279,11 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ### [ ] GET /api/quizzes/{id}/
 

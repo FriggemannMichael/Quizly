@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from quizzes_app.audio import AudioExtractionError
 from quizzes_app.generation import QuizGenerationError
+from quizzes_app.models import Quiz
 from quizzes_app.pipeline import generate_quiz_payload, save_quiz
 from quizzes_app.serializers import QuizCreateSerializer, QuizSerializer
 from quizzes_app.transcription import TranscriptionError
@@ -27,9 +28,17 @@ class QuizGenerationFailed(APIException):
 
 
 class QuizListCreateView(APIView):
-    """Create quizzes from submitted YouTube URLs."""
+    """List the current user's quizzes and create new ones from YouTube URLs."""
 
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        quizzes = (
+            Quiz.objects.filter(owner=request.user)
+            .order_by('-created_at')
+            .prefetch_related('questions')
+        )
+        return Response(QuizSerializer(quizzes, many=True).data)
 
     def post(self, request):
         serializer = QuizCreateSerializer(data=request.data)
