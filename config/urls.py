@@ -17,7 +17,6 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from accounts.views import CookieTokenRefreshView
 
@@ -25,7 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
     path('api/', include('quizzes_app.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path(
         'api/token/refresh/',
         CookieTokenRefreshView.as_view(),
