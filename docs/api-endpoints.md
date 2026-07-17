@@ -8,7 +8,7 @@ Use this document as the implementation checklist for the backend API.
 
 Login und Registrierung
 
-### [ ] POST /api/register/
+### [x] POST /api/register/
 
 **Description:** Registriert einen neuen Benutzer.
 
@@ -43,13 +43,13 @@ Login und Registrierung
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
-### [ ] POST /api/login/
+### [x] POST /api/login/
 
 **Description:** Meldet den Benutzer an und setzt Auth-Cookies.
 
@@ -88,11 +88,11 @@ Login und Registrierung
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ### [x] POST /api/logout/
 
@@ -133,7 +133,7 @@ Login und Registrierung
 - [x] Add permissions/auth handling
 - [x] Add tests for success and error cases
 
-### [ ] POST /api/token/refresh/
+### [x] POST /api/token/refresh/
 
 **Description:** Erneuert den Access-Token mithilfe des Refresh-Tokens.
 
@@ -166,17 +166,17 @@ Login und Registrierung
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ## Quiz Management
 
 Erstellung, Verwaltung und Abfrage von Quizzes
 
-### [ ] POST /api/quizzes/
+### [x] POST /api/quizzes/
 
 **Description:** Erstellt ein neues Quiz basierend auf einer YouTube-URL.
 
@@ -229,11 +229,11 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ### [ ] GET /api/quizzes/
 
