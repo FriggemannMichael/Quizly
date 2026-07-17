@@ -301,7 +301,7 @@ Do not store shortened URLs, embed URLs, playlist URLs, or raw submitted URLs.
 - [ ] Replace/default-wrap Simple JWT endpoints with cookie-aware auth views.
 - [ ] Add refresh-token blacklist support for logout.
 - [ ] Ensure cookies are named exactly `access_token` and `refresh_token`.
-- [ ] Ensure protected endpoints authenticate from cookies, not only `Authorization` headers.
+- [x] Ensure protected endpoints authenticate from cookies, not only `Authorization` headers.
 - [ ] Implement `/api/register/`, `/api/login/`, `/api/logout/`, `/api/token/refresh/` per frontend behavior.
 - [ ] Implement quiz CRUD endpoints with exact response field names.
 - [ ] Store canonical YouTube watch URLs.
