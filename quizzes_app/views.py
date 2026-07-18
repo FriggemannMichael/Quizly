@@ -64,7 +64,7 @@ def _generated_payload(video_url: str) -> dict:
 
 
 class QuizDetailView(APIView):
-    """Retrieve and partially update a single quiz owned by the current user."""
+    """Retrieve, update, and delete a single quiz owned by the current user."""
 
     permission_classes = [IsAuthenticated, IsQuizOwner]
 
@@ -78,6 +78,11 @@ class QuizDetailView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(QuizSerializer(quiz).data)
+
+    def delete(self, request, pk):
+        quiz = self._owned_quiz(request, pk)
+        quiz.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _owned_quiz(self, request, pk) -> Quiz:
         """Fetch the quiz and enforce the object-level owner permission."""
