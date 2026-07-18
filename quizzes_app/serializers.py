@@ -37,6 +37,14 @@ class QuizSerializer(serializers.ModelSerializer):
         ]
 
 
+class QuizUpdateSerializer(serializers.ModelSerializer):
+    """Validate partial quiz updates limited to the editable fields."""
+
+    class Meta:
+        model = Quiz
+        fields = ['title', 'description']
+
+
 class QuizCreateSerializer(serializers.Serializer):
     """Validate quiz creation requests and normalize the submitted video URL."""
 

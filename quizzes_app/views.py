@@ -10,7 +10,11 @@ from quizzes_app.generation import QuizGenerationError
 from quizzes_app.models import Quiz
 from quizzes_app.permissions import IsQuizOwner
 from quizzes_app.pipeline import generate_quiz_payload, save_quiz
-from quizzes_app.serializers import QuizCreateSerializer, QuizSerializer
+from quizzes_app.serializers import (
+    QuizCreateSerializer,
+    QuizSerializer,
+    QuizUpdateSerializer,
+)
 from quizzes_app.transcription import TranscriptionError
 from quizzes_app.validation import QuizValidationError
 
@@ -60,11 +64,23 @@ def _generated_payload(video_url: str) -> dict:
 
 
 class QuizDetailView(APIView):
-    """Return a single quiz owned by the current user."""
+    """Retrieve and partially update a single quiz owned by the current user."""
 
     permission_classes = [IsAuthenticated, IsQuizOwner]
 
     def get(self, request, pk):
+        quiz = self._owned_quiz(request, pk)
+        return Response(QuizSerializer(quiz).data)
+
+    def patch(self, request, pk):
+        quiz = self._owned_quiz(request, pk)
+        serializer = QuizUpdateSerializer(quiz, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(QuizSerializer(quiz).data)
+
+    def _owned_quiz(self, request, pk) -> Quiz:
+        """Fetch the quiz and enforce the object-level owner permission."""
         quiz = get_object_or_404(Quiz.objects.prefetch_related('questions'), pk=pk)
         self.check_object_permissions(request, quiz)
-        return Response(QuizSerializer(quiz).data)
+        return quiz

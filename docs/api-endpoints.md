@@ -341,7 +341,7 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 - [x] Add permissions/auth handling
 - [x] Add tests for success and error cases
 
-### [ ] PATCH /api/quizzes/{id}/
+### [x] PATCH /api/quizzes/{id}/
 
 **Description:** Aktualisiert einzelne Felder eines Quiz (partielle Aktualisierung).
 
@@ -401,11 +401,11 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ### [ ] DELETE /api/quizzes/{id}/
 
