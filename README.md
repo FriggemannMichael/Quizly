@@ -165,12 +165,15 @@ python tests/scripts/check_size_limits.py
 `ruff format --check .` only reports; use `ruff format .` to actually apply
 the formatting.
 
-CI (GitHub Actions) additionally runs migrations and the Postman auth smoke
-collection against a live server. To run it locally after starting
-`python manage.py runserver`:
+CI (GitHub Actions) additionally runs migrations and the Postman API smoke
+collection against a live server — it walks every endpoint over real HTTP:
+register, login, token refresh, the quiz list/detail/update/delete flow, and
+logout. To run it locally, seed the smoke data once and start
+`python manage.py runserver`, then:
 
 ```powershell
-npx --yes newman@6.2.1 run tests/postman/quizly-auth.postman_collection.json --env-var baseUrl=http://127.0.0.1:8000
+python tests/scripts/seed_postman_data.py
+npx --yes newman@6.2.1 run tests/postman/quizly-api.postman_collection.json --env-var baseUrl=http://127.0.0.1:8000
 ```
 
 ## Delivery checklist
