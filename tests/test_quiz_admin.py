@@ -1,7 +1,21 @@
+import pytest
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 
 from quizzes_app.admin import QuestionAdmin, QuizAdmin
 from quizzes_app.models import Question, Quiz
+
+
+@pytest.fixture
+def admin_request(db, rf):
+    """Return an admin request issued by a superuser."""
+    request = rf.get('/admin/')
+    request.user = get_user_model().objects.create_superuser(
+        username='admin_user',
+        email='admin-user@example.com',
+        password='Str0ng-test-pass!',
+    )
+    return request
 
 
 def test_quiz_and_question_models_are_registered_in_admin():
@@ -23,13 +37,19 @@ def test_quiz_admin_exposes_useful_review_fields():
     assert model_admin.list_filter == ('created_at', 'updated_at')
 
 
-def test_quiz_and_question_admin_are_read_only():
+def test_quiz_and_question_admin_allow_editing(admin_request):
     for model in (Quiz, Question):
         model_admin = admin.site._registry[model]
 
-        assert model_admin.has_add_permission(None) is False
-        assert model_admin.has_change_permission(None) is False
-        assert model_admin.has_delete_permission(None) is False
+        assert model_admin.has_change_permission(admin_request) is True
+
+
+def test_quiz_and_question_admin_block_add_and_delete(admin_request):
+    for model in (Quiz, Question):
+        model_admin = admin.site._registry[model]
+
+        assert model_admin.has_add_permission(admin_request) is False
+        assert model_admin.has_delete_permission(admin_request) is False
 
 
 def test_question_admin_exposes_useful_review_fields():
