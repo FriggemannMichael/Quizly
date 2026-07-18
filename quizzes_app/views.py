@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
@@ -7,6 +8,7 @@ from rest_framework.views import APIView
 from quizzes_app.audio import AudioExtractionError
 from quizzes_app.generation import QuizGenerationError
 from quizzes_app.models import Quiz
+from quizzes_app.permissions import IsQuizOwner
 from quizzes_app.pipeline import generate_quiz_payload, save_quiz
 from quizzes_app.serializers import QuizCreateSerializer, QuizSerializer
 from quizzes_app.transcription import TranscriptionError
@@ -55,3 +57,14 @@ def _generated_payload(video_url: str) -> dict:
         return generate_quiz_payload(video_url)
     except PIPELINE_ERRORS as error:
         raise QuizGenerationFailed() from error
+
+
+class QuizDetailView(APIView):
+    """Return a single quiz owned by the current user."""
+
+    permission_classes = [IsAuthenticated, IsQuizOwner]
+
+    def get(self, request, pk):
+        quiz = get_object_or_404(Quiz.objects.prefetch_related('questions'), pk=pk)
+        self.check_object_permissions(request, quiz)
+        return Response(QuizSerializer(quiz).data)

@@ -285,7 +285,7 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 - [x] Add permissions/auth handling
 - [x] Add tests for success and error cases
 
-### [ ] GET /api/quizzes/{id}/
+### [x] GET /api/quizzes/{id}/
 
 **Description:** Ruft ein spezifisches Quiz des Benutzers ab.
 
@@ -335,11 +335,11 @@ Erstellung, Verwaltung und Abfrage von Quizzes
 
 **Implementation Tasks**
 
-- [ ] Add or update route
-- [ ] Add serializer/request validation
-- [ ] Add view/business logic
-- [ ] Add permissions/auth handling
-- [ ] Add tests for success and error cases
+- [x] Add or update route
+- [x] Add serializer/request validation
+- [x] Add view/business logic
+- [x] Add permissions/auth handling
+- [x] Add tests for success and error cases
 
 ### [ ] PATCH /api/quizzes/{id}/
 
