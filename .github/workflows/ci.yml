@@ -44,6 +44,9 @@ jobs:
       - name: Prepare API smoke test database
         run: python manage.py migrate --noinput
 
+      - name: Seed API smoke test data
+        run: python tests/scripts/seed_postman_data.py
+
       - name: Start Django API server
         run: |
           python manage.py runserver 127.0.0.1:8000 > django.log 2>&1 &
@@ -59,7 +62,7 @@ jobs:
 
       - name: Run Postman smoke tests
         run: |
-          npx --yes newman@6.2.1 run tests/postman/quizly-auth.postman_collection.json \
+          npx --yes newman@6.2.1 run tests/postman/quizly-api.postman_collection.json \
             --env-var baseUrl=http://127.0.0.1:8000
 
       - name: Check size limits
