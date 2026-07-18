@@ -297,14 +297,48 @@ Do not store shortened URLs, embed URLs, playlist URLs, or raw submitted URLs.
 
 ## Current Backend Gap List
 
-- [ ] Add credentialed CORS support for the frontend origin.
-- [ ] Replace/default-wrap Simple JWT endpoints with cookie-aware auth views.
-- [ ] Add refresh-token blacklist support for logout.
-- [ ] Ensure cookies are named exactly `access_token` and `refresh_token`.
+- [x] Add credentialed CORS support for the frontend origin.
+- [x] Replace/default-wrap Simple JWT endpoints with cookie-aware auth views.
+- [x] Add refresh-token blacklist support for logout.
+- [x] Ensure cookies are named exactly `access_token` and `refresh_token`.
 - [x] Ensure protected endpoints authenticate from cookies, not only `Authorization` headers.
-- [ ] Implement `/api/register/`, `/api/login/`, `/api/logout/`, `/api/token/refresh/` per frontend behavior.
-- [ ] Implement quiz CRUD endpoints with exact response field names.
-- [ ] Store canonical YouTube watch URLs.
-- [ ] Return ISO datetime strings parseable by JavaScript `Date`.
-- [ ] Keep question options as a JSON array of exactly four strings.
-- [ ] Keep `answer` equal to one of the `question_options` strings.
+- [x] Implement `/api/register/`, `/api/login/`, `/api/logout/`, `/api/token/refresh/` per frontend behavior.
+- [x] Implement quiz CRUD endpoints with exact response field names.
+- [x] Store canonical YouTube watch URLs.
+- [x] Return ISO datetime strings parseable by JavaScript `Date`.
+- [x] Keep question options as a JSON array of exactly four strings.
+- [x] Keep `answer` equal to one of the `question_options` strings.
+
+## Contract Verification (2026-07-18)
+
+Verified against frontend commit `ae8e863` (cloned outside the project at
+`C:\tmp\quizly-frontend`; the frontend repository must not live inside this
+project).
+
+Static verification, backend code matched against the frontend source:
+
+- Endpoint URLs: `config/urls.py`, `accounts/urls.py`, and `quizzes_app/urls.py`
+  expose exactly the routes `config.js` builds from `API_BASE_URL`.
+- Cookie names and flags: `core/cookies.py` uses `access_token` /
+  `refresh_token`, HttpOnly, SameSite=Lax.
+- CORS: `corsheaders` middleware first, `CORS_ALLOWED_ORIGINS` defaults to
+  `http://127.0.0.1:5500` and `http://localhost:5500`,
+  `CORS_ALLOW_CREDENTIALS = True` (`config/settings.py`).
+- Response bodies: register/login/logout/refresh payloads in
+  `accounts/views.py` and `accounts/utils.py` match the messages and field
+  names the frontend reads (`data.username`, `responseData.detail`,
+  `user.{id,username,email}`).
+- Quiz payloads: `QuizSerializer` / `QuestionSerializer` field names match the
+  properties used by `library.js`, `quizoverview.js`, and `quiz.js`;
+  `normalize_youtube_url` stores the canonical `watch?v=` shape the embed
+  transformation requires.
+
+Live verification: `manage.py runserver` plus a request-level probe replaying
+the frontend flow (Origin `http://127.0.0.1:5500`, cookies only, no
+`Authorization` header). All 21 checks passed: CORS preflight, register (201 +
+detail), login (200, HttpOnly cookie pair, `detail` + `user` body, no tokens
+in JSON), protected quiz list via cookies, body-less token refresh (rotated
+`access_token` cookie, `Token refreshed`), logout (cookies cleared), and a 401
+on the quiz list after logout.
+
+No frontend mismatch remains.
