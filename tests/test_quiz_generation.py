@@ -32,6 +32,12 @@ def api_key(monkeypatch):
     monkeypatch.setenv('GEMINI_API_KEY', 'test-key')
 
 
+@pytest.fixture(autouse=True)
+def no_sleep(monkeypatch):
+    """Skip tenacity's real backoff sleeps so retry tests run instantly."""
+    monkeypatch.setattr('tenacity.nap.time.sleep', lambda seconds: None)
+
+
 def _client_returning(text):
     """Return a mocked Gemini client whose response carries the given text."""
     client = MagicMock()
@@ -172,6 +178,181 @@ def test_generate_quiz_wraps_api_errors():
     with patch(CLIENT_TARGET, return_value=client):
         with pytest.raises(QuizGenerationError):
             generate_quiz(TRANSCRIPT)
+
+
+def _availability_error():
+    """Return the 503 error Gemini raises while the model is overloaded."""
+    return errors.ServerError(
+        503,
+        {
+            'error': {
+                'code': 503,
+                'status': 'UNAVAILABLE',
+                'message': 'The model is currently experiencing high demand.',
+            }
+        },
+    )
+
+
+def _rate_limit_error(retry_delay='7s', quota_value='250'):
+    """Return a 429 error, optionally with a retry delay and quota value."""
+    details = [
+        {
+            '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+            'violations': [
+                {
+                    'quotaMetric': 'generate_content_free_tier_requests',
+                    'quotaValue': quota_value,
+                }
+            ],
+        }
+    ]
+    if retry_delay is not None:
+        details.append(
+            {
+                '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+                'retryDelay': retry_delay,
+            }
+        )
+    return errors.ClientError(
+        429,
+        {
+            'error': {
+                'code': 429,
+                'status': 'RESOURCE_EXHAUSTED',
+                'message': 'You exceeded your current quota.',
+                'details': details,
+            }
+        },
+    )
+
+
+def _client_failing_then_succeeding(*failures):
+    """Return a mocked client that fails with each error, then succeeds."""
+    client = MagicMock()
+    client.models.generate_content.side_effect = [
+        *failures,
+        MagicMock(text=json.dumps(QUIZ_PAYLOAD)),
+    ]
+    return client
+
+
+def test_generate_quiz_retries_after_a_503():
+    client = _client_failing_then_succeeding(_availability_error())
+
+    with patch(CLIENT_TARGET, return_value=client):
+        quiz = generate_quiz(TRANSCRIPT)
+
+    assert quiz == QUIZ_PAYLOAD
+    assert client.models.generate_content.call_count == 2
+
+
+def test_generate_quiz_retries_a_429_with_a_retry_delay():
+    client = _client_failing_then_succeeding(_rate_limit_error())
+
+    with patch(CLIENT_TARGET, return_value=client):
+        quiz = generate_quiz(TRANSCRIPT)
+
+    assert quiz == QUIZ_PAYLOAD
+    assert client.models.generate_content.call_count == 2
+
+
+@pytest.mark.parametrize('code', [400, 401, 404])
+def test_generate_quiz_does_not_retry_permanent_errors(code):
+    client = MagicMock()
+    client.models.generate_content.side_effect = errors.APIError(
+        code, {'error': {'code': code, 'message': 'permanent failure'}}
+    )
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_does_not_retry_a_zero_quota_429():
+    client = MagicMock()
+    client.models.generate_content.side_effect = _rate_limit_error(quota_value='0')
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_does_not_retry_a_429_without_a_retry_delay():
+    client = MagicMock()
+    client.models.generate_content.side_effect = _rate_limit_error(retry_delay=None)
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_exhausts_retries_into_an_error():
+    client = MagicMock()
+    client.models.generate_content.side_effect = [
+        _availability_error(),
+        _availability_error(),
+        _availability_error(),
+    ]
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 3
+
+
+def test_generate_quiz_does_not_retry_unexpected_errors():
+    client = MagicMock()
+    client.models.generate_content.side_effect = RuntimeError('boom')
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(RuntimeError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_does_not_retry_a_429_with_a_non_json_body():
+    error = _rate_limit_error()
+    error.details = 'plain text instead of an error object'
+    client = MagicMock()
+    client.models.generate_content.side_effect = error
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_does_not_retry_a_429_with_a_malformed_error_field():
+    error = _rate_limit_error()
+    error.details = {'error': 'plain text instead of an error object'}
+    client = MagicMock()
+    client.models.generate_content.side_effect = error
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
+
+
+def test_generate_quiz_does_not_retry_an_invalid_response_body():
+    client = _client_returning('Sorry, I cannot help with that.')
+
+    with patch(CLIENT_TARGET, return_value=client):
+        with pytest.raises(QuizGenerationError):
+            generate_quiz(TRANSCRIPT)
+
+    assert client.models.generate_content.call_count == 1
 
 
 def test_build_prompt_appends_transcript_at_the_end():
