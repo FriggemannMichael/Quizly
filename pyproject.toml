@@ -18,8 +18,6 @@ omit = [
     "*/test_*.py",
     "*/__init__.py",
     "manage.py",
-    "main.py",
-    "scripts/*",
     "config/asgi.py",
     "config/wsgi.py",
 ]
